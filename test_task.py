@@ -12,7 +12,7 @@ from keras.utils import np_utils
 from keras.layers.convolutional import Conv2D, AveragePooling2D, MaxPooling2D
 from keras.utils import plot_model
 
-mt.use('TkAgg')
+# mt.use('TkAgg') # Segmentation issue with MacOS
 K.set_image_dim_ordering('tf')
 
 # loading input data
@@ -38,6 +38,8 @@ def build_model(size):
 
     model.add(AveragePooling2D(pool_size=(2, 2)))
     model.add(Activation("sigmoid"))
+    
+    # Trial Alternatives:
     # model.add(Activation("relu"))
     # model.add(MaxPooling2D(pool_size=(2, 2)))
     # model.add(Dropout(0.25))
@@ -46,8 +48,8 @@ def build_model(size):
 
     model.add(AveragePooling2D(pool_size=(2, 2)))
     model.add(Activation("sigmoid"))
-    model.add(Dropout(0.5))
 
+    # Trial Alternatives (continued):
     # model.add(Activation("relu"))
     # model.add(MaxPooling2D(pool_size=(2, 2)))
     # model.add(Dropout(0.25))
@@ -69,16 +71,20 @@ def build_model(size):
 
     return model, history
 
+# method to extract the 6 filters that are outputs of the first layer
 def extract_1stL(model):
     first_conv = K.function(model.inputs, [model.layers[1].output])
     first_conv_out = first_conv([x_test])
+    # first 10 images
     for idx in range(10):
         fig, axes = plt.subplots(ncols=6, figsize=(6, 6))
+        # draw 6 filters
         for f in range(6):
             axes[f].imshow(first_conv_out[0][idx][f])
     plt.show()
     plt.close(fig)
 
+# method to plot training/validation curves using pyplot
 def plot_history(train_value, test_value, s):
     f, axes = plt.subplots()
     axes.plot(train_value, 'o-', label="Training score")
@@ -88,6 +94,7 @@ def plot_history(train_value, test_value, s):
     axes.set_xlabel('Epoch')
     axes.set_ylabel(s)  
 
+# initialize the model, plot curves and extract filters
 def init(sz):
     model, history = build_model(sz)
     test = model.evaluate(x_test, y_test, verbose=1)
@@ -97,5 +104,7 @@ def init(sz):
     plot_history(history.history['acc'], history.history['val_acc'], 'Accuracy')
     extract_1stL(model)
 
-init(11)
+# Net 1
 init(5)
+# Net 2
+init(11)
