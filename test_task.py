@@ -71,7 +71,7 @@ def build_model(size):
 
     return model, history
 
-# method to extract the 6 filters that are outputs of the first layer
+# method to extract the 6 filters of the first layer
 def extract_1stL(model):
     w = model.layers[0].get_weights()
     x, y, z, num_filters = w[0].shape
