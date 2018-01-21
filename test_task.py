@@ -74,8 +74,8 @@ def build_model(size):
 # method to extract the 6 filters that are outputs of the first layer
 def extract_1stL(model):
     w = model.layers[0].get_weights()
-    fig, axes = plt.subplots(ncols=6, figsize=(6, 6))
     x, y, z, num_filters = w[0].shape
+    fig, axes = plt.subplots(ncols=6, figsize=(6, 6))
 
     for f in range(num_filters):
         grid = [[[w[0][i][j][k][f] for k in range(z)] for j in range(y)] for i in range(x)]
