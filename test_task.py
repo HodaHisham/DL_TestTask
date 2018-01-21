@@ -59,7 +59,7 @@ def build_model(size):
     model.add(Flatten())
 
     model.add(Dense(84))
-    model.add(Activation("relu"))
+    model.add(Activation("sigmoid"))
     model.add(Dense(10))
     model.add(Activation('softmax'))
 
@@ -67,20 +67,20 @@ def build_model(size):
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
 
-    history = model.fit(x_train, y_train, epochs=10, batch_size=32, validation_data=(x_test, y_test), verbose=1)
+    history = model.fit(x_train, y_train, epochs=1, batch_size=32, validation_data=(x_test, y_test), verbose=1)
 
     return model, history
 
 # method to extract the 6 filters that are outputs of the first layer
 def extract_1stL(model):
-    first_conv = K.function(model.inputs, [model.layers[1].output])
-    first_conv_out = first_conv([x_test])
-    # first 10 images
-    for idx in range(10):
-        fig, axes = plt.subplots(ncols=6, figsize=(6, 6))
-        # draw 6 filters
-        for f in range(6):
-            axes[f].imshow(first_conv_out[0][idx][f])
+    w = model.layers[0].get_weights()
+    # for idx in range(10):
+    fig, axes = plt.subplots(ncols=6, figsize=(6, 6))
+    x, y, z, num_filters = w[0].shape
+
+    for f in range(num_filters):
+        grid = [[[w[0][i][j][k][f] for k in range(z)] for j in range(y)] for i in range(x)]
+        axes[f].imshow(grid)
     plt.show()
     plt.close(fig)
 
@@ -97,11 +97,11 @@ def plot_history(train_value, test_value, s):
 # initialize the model, plot curves and extract filters
 def init(sz):
     model, history = build_model(sz)
-    test = model.evaluate(x_test, y_test, verbose=1)
-    print "\nTest loss:", str(test[0])
-    print "Test accuracy:", str(test[1])
-    plot_history(history.history['loss'], history.history['val_loss'], 'Loss')
-    plot_history(history.history['acc'], history.history['val_acc'], 'Accuracy')
+    # test = model.evaluate(x_test, y_test, verbose=1)
+    # print "\nTest loss:", str(test[0])
+    # print "Test accuracy:", str(test[1])
+    # plot_history(history.history['loss'], history.history['val_loss'], 'Loss')
+    # plot_history(history.history['acc'], history.history['val_acc'], 'Accuracy')
     extract_1stL(model)
 
 # Net 1
